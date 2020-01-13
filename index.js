@@ -210,21 +210,8 @@ async function checkOutRemoteBranch(branch) {
       return true;
     }
 
-    core.debug(`fetching "${branch}" branch from remote`);
-    await runShellCommand(
-      `git fetch https://x-access-token:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git ${branch}:${branch}`
-    );
-
-    await runShellCommand(`git branch`);
-
-    core.debug(`Checking out "${branch}" branch locally`);
-    await runShellCommand(`git checkout ${branch}`);
-    core.info(`Remote branch "${branch}" checked out locally.`);
-
-    await runShellCommand(
-      `git cherry-pick --strategy recursive --strategy-option theirs ${TEMPORARY_BRANCH_NAME}`
-    );
-
+    await runShellCommand(`git checkout -b ${branch}`);
+    
     return true;
   } catch (error) {
     core.info(`Branch "${branch}" does not yet exist on remote.`);
