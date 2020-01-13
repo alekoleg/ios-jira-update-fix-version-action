@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gr2m/create-or-update-pull-request-action.git"
+    "url": "git+https://github.com/alekoleg/create-or-update-pull-request-action.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/gr2m/create-or-update-pull-request-action/issues"
+    "url": "https://github.com/alekoleg/create-or-update-pull-request-action/issues"
   },
-  "homepage": "https://github.com/gr2m/create-or-update-pull-request-action#readme",
+  "homepage": "https://github.com/alekoleg/create-or-update-pull-request-action#readme",
   "dependencies": {
     "@actions/core": "^1.1.1",
     "@octokit/request": "^5.1.0",
