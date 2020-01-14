@@ -804,6 +804,13 @@ async function main() {
 
     core.info(`Pull request created: ${html_url}`);
     await runShellCommand(`git stash pop || true`);
+
+
+    core.info(`Getting pull request number`);
+    const re = /\d{1,}$/i
+    const pr_numer = html_url.match(re)
+    await runShellCommand("echo ::set-env name=PULL_REQUEST_NUMBER::{pr_numer}")
+
   } catch (error) {
     core.debug(inspect(error));
     core.setFailed(error.message);
