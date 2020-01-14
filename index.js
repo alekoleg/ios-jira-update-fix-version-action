@@ -134,8 +134,8 @@ async function main() {
           authorization: `token ${process.env.GITHUB_TOKEN}`
         },
         head: inputs.branch,
-        type:pr,
-        is:open, 
+        type: "pr",
+        is: "open", 
         repo: process.env.GITHUB_REPOSITORY
       });
 
