@@ -131,7 +131,10 @@ async function main() {
         headers: {
           authorization: `token ${process.env.GITHUB_TOKEN}`
         },
-        q
+        head: inputs.branch,
+        type:pr,
+        is:open, 
+        repo: process.env.GITHUB_REPOSITORY
       });
 
       if (data.total_count > 0) {
@@ -214,7 +217,7 @@ async function checkOutRemoteBranch(branch) {
       return true;
     }
 
-    await runShellCommand(`git checkout -b ${branch}`);
+    await runShellCommand(`git checkout ${branch}`);
     
     return true;
   } catch (error) {
