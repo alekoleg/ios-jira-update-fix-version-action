@@ -126,6 +126,8 @@ async function main() {
     );
 
     if (remoteBranchExists) {
+
+      core.debug(`Requestion Branch if exist ololol`);
       const q = `head:${inputs.branch} type:pr is:open repo:${process.env.GITHUB_REPOSITORY}`;
       const { data } = await request("GET /search/issues", {
         headers: {
