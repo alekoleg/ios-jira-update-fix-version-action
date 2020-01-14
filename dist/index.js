@@ -783,7 +783,7 @@ async function main() {
 
       if (data.total_count > 0) {
         core.info(
-          `Existing pull request for branch "${inputs.branch}" updated: ${data.items.html_url}`
+          `Existing pull request for branch "${inputs.branch}" updated`
         );
         return;
       }
