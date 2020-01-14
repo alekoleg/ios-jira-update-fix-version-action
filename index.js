@@ -210,6 +210,11 @@ async function setGitUser({ name, email }) {
 
 async function checkOutRemoteBranch(branch) {
   try {
+
+    core.debug('Fetch origin')
+    await runShellCommand(
+      `git fetch origin`
+    );
     const currentBranch = await runShellCommand(
       `git rev-parse --abbrev-ref HEAD`
     );
