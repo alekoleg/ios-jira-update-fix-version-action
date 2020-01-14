@@ -161,7 +161,7 @@ async function main() {
     await runShellCommand(`git stash pop || true`);
 
 
-    core.info(`Getting pull request number`);
+    core.info(`Getting pull request number info`);
     const re = /\d{1,}$/i
     const pr_numer = html_url.match(re)
     core.info(`::set-output name=PULL_REQUEST_NUMBER::${pr_numer}`)
