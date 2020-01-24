@@ -1,34 +1,16 @@
-name: Create or Update Pull Request
-description: "A GitHub Action to create or update a pull request based on local changes"
+name: Update Jira Task's fix version
+description: "A GitHub Action to update fix version for Jira tasks based on diff"
 branding:
   icon: "git-pull-request"
   color: purple
 inputs:
-  title:
-    description: "Pull Request title"
+  ticketRegexp:
+    description: "Regexp of the Jira Ticket Number"
     required: true
-    default: "Update from 'Create or Update Request' action"
-  body:
-    description: "Pull Request body"
+  targetBranch:
+    description: "Branch name to compare with [default: Master]"
     required: true
-    default: |
-      This pull request has been created by the ["Create or Update Pull Request" action](https://github.com/gr2m/create-or-update-pull-request-action#readme). 
-
-      You can set a custom pull request title, body, branch and commit messages, see [Usage](https://github.com/gr2m/create-or-update-pull-request-action#usage).
-  branch:
-    description: "Branch name"
-    required: true
-    default: create-or-update-pull-request-action
-  author:
-    description: Commit author name & email address. Must be in the form "Name <email@domain.com>"
-    required: true
-    default: "Create or Update Pull Request Action <create-or-update-pull-request@users.noreply.github.com>"
-  commit-message:
-    description: Commit message for all uncommited changes.
-    required: true
-    default: Update from 'Create or Update Request' action
-  path:
-    description: Commit selected files only by providing a path. It is used in `git add "<path>"`
+    default: "master"
 runs:
   using: "node12"
   main: "dist/index.js"

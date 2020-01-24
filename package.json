@@ -1,26 +1,27 @@
 {
-  "name": "create-or-update-pull-request-action",
+  "name": "update-jira-fix-version-ticket",
   "version": "1.0.0",
-  "description": "A GitHub Action to create or update a pull request based on local changes",
+  "description": "A GitHub Action to update a fix version of Jira Ticket",
   "main": "index.js",
   "scripts": {
     "build": "ncc build index.js -o dist"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/alekoleg/create-or-update-pull-request-action.git"
+    "url": "git+https://github.com/bolteu/ios-jira-update-fix-version-action.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/alekoleg/create-or-update-pull-request-action/issues"
+    "url": "https://github.com/bolteu/ios-jira-update-fix-version-action"
   },
-  "homepage": "https://github.com/alekoleg/create-or-update-pull-request-action#readme",
+  "homepage": "https://github.com/bolteu/ios-jira-update-fix-version-action#readme",
   "dependencies": {
     "@actions/core": "^1.1.1",
     "@octokit/request": "^5.1.0",
-    "execa": "^2.0.4"
+    "execa": "^2.0.4",
+    "jira-client": "^6.14.0"
   },
   "devDependencies": {
     "@semantic-release/git": "^7.0.16",

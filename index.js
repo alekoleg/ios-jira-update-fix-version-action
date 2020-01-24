@@ -4,10 +4,7 @@ const { inspect } = require("util");
 const { command } = require("execa");
 const core = require("@actions/core");
 const { request } = require("@octokit/request");
-
-const TEMPORARY_BRANCH_NAME = `tmp-create-or-update-pull-request-action-${Math.random()
-  .toString(36)
-  .substr(2)}`;
+const JiraApi = require('jira-client');
 
 main();
 
@@ -16,7 +13,7 @@ async function main() {
     core.setFailed(
       `GITHUB_TOKEN is not configured. Make sure you made it available to your action
   
-  uses: gr2m/create-or-update-pull-request-action@master
+  uses: bolteu/ios-jira-update-fix-version-action@master
   env:
     GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }}`
     );
@@ -38,205 +35,19 @@ async function main() {
 
   try {
     const inputs = {
-      title: core.getInput("title"),
-      body: core.getInput("body"),
-      branch: core.getInput("branch").replace(/^refs\/heads\//, ""),
-      path: core.getInput("path"),
-      commitMessage: core.getInput("commit-message"),
-      author: core.getInput("author")
+      tiketRegexp: core.getInput("ticketRegexp"),
+      targetBranch: core.getInput("targetBranch")
     };
 
     core.debug(`Inputs: ${inspect(inputs)}`);
 
-    const {
-      data: { default_branch }
-    } = await request(`GET /repos/${process.env.GITHUB_REPOSITORY}`, {
-      headers: {
-        authorization: `token ${process.env.GITHUB_TOKEN}`
-      }
-    });
-    const DEFAULT_BRANCH = default_branch;
-    core.debug(`DEFAULT_BRANCH: ${DEFAULT_BRANCH}`);
+    const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_REF}`);
 
-    const { hasChanges } = await getLocalChanges(inputs.path);
-
-    if (!hasChanges) {
-      if (inputs.path) {
-        core.info(`No local changes matching "${inputs.path}"`);
-      } else {
-        core.info("No local changes");
-      }
-      process.exit(0); // there is currently no neutral exit code
-    }
-
-    core.debug(`Local changes found`);
-
-    await runShellCommand(`git checkout -b "${TEMPORARY_BRANCH_NAME}"`);
-
-    const gitUser = await getGitUser();
-    if (gitUser) {
-      core.debug(`Git User already configured as: ${inspect(gitUser)}`);
-    } else {
-      const matches = inputs.author.match(/^([^<]+)\s*<([^>]+)>$/);
-      assert(
-        matches,
-        `The "author" input "${inputs.author}" does conform to the "Name <email@domain.test>" format`
-      );
-      const [, name, email] = matches;
-
-      await setGitUser({
-        name,
-        email
-      });
-    }
-
-    if (inputs.path) {
-      core.debug(`Committing local changes matching "${inputs.path}"`);
-      await runShellCommand(`git add "${inputs.path}"`);
-    } else {
-      core.debug(`Committing all local changes`);
-      await runShellCommand("git add .");
-    }
-
-    await runShellCommand(
-      `git commit -m "${inputs.commitMessage}" --author "${inputs.author}"`
-    );
-
-    const currentBranch = await runShellCommand(
-      `git rev-parse --abbrev-ref HEAD`
-    );
-
-    if (currentBranch === DEFAULT_BRANCH) {
-      core.info(`Already in base branch "${currentBranch}".`);
-    } else {
-      core.debug(`rebase all local changes on base branch`);
-      await runShellCommand(
-        `git fetch https://x-access-token:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git ${DEFAULT_BRANCH}:${DEFAULT_BRANCH}`
-      );
-      await runShellCommand(`git stash --include-untracked`);
-      await runShellCommand(`git rebase -X theirs "${DEFAULT_BRANCH}"`);
-    }
-
-    core.debug(`Try to fetch and checkout remote branch "${inputs.branch}"`);
-    const remoteBranchExists = await checkOutRemoteBranch(inputs.branch);
-
-    core.debug(`Pushing local changes`);
-    await runShellCommand(
-      `git push -f https://x-access-token:${process.env.GITHUB_TOKEN}@github.com/${process.env.GITHUB_REPOSITORY}.git HEAD:refs/heads/${inputs.branch}`
-    );
-
-    if (remoteBranchExists) {
-
-      core.debug(`Requestion Branch if exist ololol`);
-      const q = `head:${inputs.branch} type:pr is:open repo:${process.env.GITHUB_REPOSITORY}`;
-      const { data } = await request("GET /search/issues", {
-        headers: {
-          authorization: `token ${process.env.GITHUB_TOKEN}`
-        },
-        q: q,
-      });
-
-      if (data.total_count > 0) {
-        core.info(
-          `Existing pull request for branch "${inputs.branch}" updated`
-        );
-        return;
-      }
-    }
-
-    core.debug(`Creating pull request`);
-    const {
-      data: { html_url }
-    } = await request(`POST /repos/${process.env.GITHUB_REPOSITORY}/pulls`, {
-      headers: {
-        authorization: `token ${process.env.GITHUB_TOKEN}`
-      },
-      title: inputs.title,
-      body: inputs.body,
-      head: inputs.branch,
-      base: DEFAULT_BRANCH
-    });
-
-    core.info(`Pull request created: ${html_url}`);
-    await runShellCommand(`git stash pop || true`);
-
-
-    core.info(`Getting pull request number info`);
-    const re = /\d{1,}$/i
-    const pr_numer = html_url.match(re)
-    core.info(`::set-output name=PULL_REQUEST_NUMBER::${pr_numer}`)
-
-  } catch (error) {
-    core.debug(inspect(error));
-    core.setFailed(error.message);
-  }
-}
-
-async function getLocalChanges(path) {
-  const output = await runShellCommand(`git status ${path || "*"}`);
-
-  if (/nothing to commit, working tree clean/i.test(output)) {
-    return {};
-  }
-
-  const hasUncommitedChanges = /(Changes to be committed|Changes not staged|Untracked files)/.test(
-    output
-  );
-
-  return {
-    hasUncommitedChanges,
-    hasChanges: hasUncommitedChanges
-  };
-}
-
-async function getGitUser() {
-  try {
-    const name = await runShellCommand("git config --get user.name");
-    const email = await runShellCommand("git config --get user.email");
-
-    return {
-      name,
-      email
-    };
-  } catch (error) {
-    return;
+    core.info(`Commits: ${commits}`);
   }
 }
 
 
-async function setGitUser({ name, email }) {
-  core.debug(`Configuring user.name as "${name}"`);
-  await runShellCommand(`git config --global user.name "${name}"`);
-
-  core.debug(`Configuring user.email as "${email}"`);
-  await runShellCommand(`git config --global user.email "${email}"`);
-}
-
-async function checkOutRemoteBranch(branch) {
-  try {
-
-    core.debug('Fetch origin')
-    await runShellCommand(
-      `git fetch origin`
-    );
-    const currentBranch = await runShellCommand(
-      `git rev-parse --abbrev-ref HEAD`
-    );
-
-    if (currentBranch === branch) {
-      core.info(`Already in "${branch}".`);
-      return true;
-    }
-
-    await runShellCommand(`git checkout ${branch}`);
-    
-    return true;
-  } catch (error) {
-    core.info(`Branch "${branch}" does not yet exist on remote.`);
-    await runShellCommand(`git checkout -b ${branch}`);
-    return false;
-  }
-}
 
 async function runShellCommand(commandString) {
   core.debug(`$ ${commandString}`);
