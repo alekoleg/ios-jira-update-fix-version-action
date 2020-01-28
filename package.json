@@ -8,15 +8,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/bolteu/ios-jira-update-fix-version-action.git"
+    "url": "git+https://github.com/alekoleg/ios-jira-update-fix-version-action.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/bolteu/ios-jira-update-fix-version-action"
+    "url": "https://github.com/alekoleg/ios-jira-update-fix-version-action"
   },
-  "homepage": "https://github.com/bolteu/ios-jira-update-fix-version-action#readme",
+  "homepage": "https://github.com/alekoleg/ios-jira-update-fix-version-action#readme",
   "dependencies": {
     "@actions/core": "^1.1.1",
     "@octokit/request": "^5.1.0",
