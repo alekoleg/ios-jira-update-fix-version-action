@@ -5,6 +5,8 @@ const { command } = require("execa");
 const core = require("@actions/core");
 const { request } = require("@octokit/request");
 const JiraApi = require('jira-client');
+const simpleGit = require('simple-git/promise');
+const git = simpleGit();
 
 main();
 
@@ -44,8 +46,9 @@ async function main() {
     await runShellCommand(`git fetch origin ${inputs.targetBranch}`)
     await runShellCommand(`git fetch origin ${process.env.GITHUB_REF}`)
 
-    const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_REF}`);
+    // const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_REF}`);
 
+    const commits = await git.log(`origin/${inputs.targetBranch}`, process.env.GITHUB_REF)
     core.info(`Commits: ${commits}`);
   } catch (error) {
     core.debug(inspect(error));
