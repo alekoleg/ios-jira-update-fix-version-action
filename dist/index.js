@@ -4747,7 +4747,10 @@ async function main() {
 
     // const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_REF}`);
 
-    const commits = await git.log(`origin/${inputs.targetBranch}`, process.env.GITHUB_REF)
+    const commits = await git.log({
+      from: `origin/${inputs.targetBranch}`,
+      to: process.env.GITHUB_REF
+    })
     core.info(`Commits: ${commits}`);
   } catch (error) {
     core.debug(inspect(error));
