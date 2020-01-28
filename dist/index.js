@@ -4751,7 +4751,7 @@ async function main() {
       from: `origin/${inputs.targetBranch}`,
       to: process.env.GITHUB_REF
     })
-    core.info(`Commits: ${commits}`);
+    core.info("Commits: " + JSON.stringify(commits));
   } catch (error) {
     core.debug(inspect(error));
     core.setFailed(error.message);
