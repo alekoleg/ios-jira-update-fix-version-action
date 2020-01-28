@@ -41,6 +41,9 @@ async function main() {
 
     core.debug(`Inputs: ${inspect(inputs)}`);
 
+    await runShellCommand(`git fetch origin ${inputs.targetBranch}`)
+    await runShellCommand(`git fetch origin ${process.env.GITHUB_REF}`)
+
     const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_REF}`);
 
     core.info(`Commits: ${commits}`);
