@@ -2736,7 +2736,11 @@ async function main() {
       strictSSL: true
     });
 
-    const issue = await jira.issue.getIssue({ issueKey: "CLINETAPP-1000" });
+    matches.forEach(async element => {
+      const issue = await jira.issue.getIssue({ issueKey: element });  
+      core.info(`Issue version: ${issue.fields.fixVersions}`)
+    })
+    const issue = await jira.issue.getIssue({ issueKey: "CLIENTAPP-1000" });
     core.info(`Issue version: ${issue.fields.fixVersions}`)
 
   } catch (error) {
