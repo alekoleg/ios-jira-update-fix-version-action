@@ -4,7 +4,7 @@ const { inspect } = require("util");
 const { command } = require("execa");
 const core = require("@actions/core");
 const { request } = require("@octokit/request");
-const JiraApi = require('jira-client');
+const JiraClient = require("jira-connector");
 
 main();
 
@@ -35,8 +35,11 @@ async function main() {
 
   try {
     const inputs = {
-      tiketRegexp: core.getInput("ticketRegexp"),
-      targetBranch: core.getInput("targetBranch")
+      ticketRegexp: core.getInput("ticketRegexp"),
+      targetBranch: core.getInput("targetBranch"),
+      jiraAccount: core.getInput("jiraAccount"),
+      jiraToken: core.getInput("jiraToken"),
+      jiraHost: core.getInput("jiraHost"),
     };
 
     core.debug(`Inputs: ${inspect(inputs)}`);
@@ -54,14 +57,25 @@ async function main() {
     const matches = commits.match(regexp)
 
     core.info("Commits: " + JSON.stringify(matches));
+
+
+    var jira = new JiraClient({
+      host: inputs.jiraHost,
+      basic_auth: {
+        email: inputs.jiraAccount,
+        api_token: inputs.jiraToken
+      },
+      strictSSL: true
+    });
+
+    const issue = await jira.issue.getIssue({ issueKey: "CLINETAPP-1000" });
+    core.info(`Issue version: ${issue.fields.fixVersions}`)
+
   } catch (error) {
     core.debug(inspect(error));
     core.setFailed(error.message);
   }
-
 }
-
-
 
 async function runShellCommand(commandString) {
   core.debug(`$ ${commandString}`);

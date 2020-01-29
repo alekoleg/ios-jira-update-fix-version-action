@@ -4,6 +4,16 @@ branding:
   icon: "git-pull-request"
   color: purple
 inputs:
+  jiraAccount:
+    description: "Jira account"
+    required: true
+  jiraToken:
+    description: "Jira access token"
+    required: true
+  jiraHost:
+    description: "Jira Host"
+    required: false
+    default: "taxify.atlassian.net"
   ticketRegexp:
     description: "Regexp of the Jira Ticket Number"
     required: true
