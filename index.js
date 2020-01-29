@@ -50,7 +50,7 @@ async function main() {
 
     const commits = await git.log([
       `--no-merges`,
-      `${inputs.targetBranch}..${process.env.GITHUB_REF}`,
+      `${process.env.GITHUB_REF}..origin/${inputs.targetBranch}`,
     ])
     core.info("Commits: " + JSON.stringify(commits));
   } catch (error) {
