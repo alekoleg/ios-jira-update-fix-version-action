@@ -46,12 +46,12 @@ async function main() {
     await runShellCommand(`git fetch origin ${inputs.targetBranch}`)
     await runShellCommand(`git fetch origin ${process.env.GITHUB_REF}`)
 
-    // const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_REF}`);
+    const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..HEAD`);
 
-    const commits = await git.log([
-      `--no-merges`,
-      `origin/${inputs.targetBranch}..HEAD`,
-    ])
+    // const commits = await git.log([
+    //   `--no-merges`,
+    //   `origin/${inputs.targetBranch}..HEAD`,
+    // ])
     core.info("Commits: " + JSON.stringify(commits));
   } catch (error) {
     core.debug(inspect(error));
