@@ -70,7 +70,8 @@ async function main() {
 
     matches.forEach(async element => {
       const issue = await jira.issue.getIssue({ issueKey: element });  
-      core.info("Issue : " + element )
+      core.info("Issue : " + element)
+      
       core.info("Issue version: " + JSON.stringify(issue.fields.fixVersions))
     })
     
