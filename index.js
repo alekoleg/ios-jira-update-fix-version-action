@@ -5,8 +5,6 @@ const { command } = require("execa");
 const core = require("@actions/core");
 const { request } = require("@octokit/request");
 const JiraApi = require('jira-client');
-const simpleGit = require('simple-git/promise');
-const git = simpleGit();
 
 main();
 
@@ -48,14 +46,10 @@ async function main() {
 
     const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..HEAD`);
 
-    // const regexp = new RegExp(inputs.ticketRegexp, "i")
-    const regexp = /(CLIENTAPP|RNTL|MTL)-\d{1,}/gmi
+    const regexp = new RegExp(inputs.ticketRegexp, "gmi")
+    // const regexp = /(CLIENTAPP|RNTL|MTL)-\d{1,}/gmi
     const matches = commits.match(regexp)
 
-    // const commits = await git.log([
-    //   `--no-merges`,
-    //   `origin/${inputs.targetBranch}..HEAD`,
-    // ])
     core.info("Commits: " + JSON.stringify(matches));
   } catch (error) {
     core.debug(inspect(error));
