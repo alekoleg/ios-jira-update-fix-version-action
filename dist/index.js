@@ -2738,10 +2738,10 @@ async function main() {
 
     matches.forEach(async element => {
       const issue = await jira.issue.getIssue({ issueKey: element });  
-      core.info(`Issue version: ${issue.fields.fixVersions}`)
+      core.info("Issue : " + element )
+      core.info("Issue version: " + JSON.stringify(issue.fields.fixVersions))
     })
-    const issue = await jira.issue.getIssue({ issueKey: "CLIENTAPP-1000" });
-    core.info(`Issue version: ${issue.fields.fixVersions}`)
+    
 
   } catch (error) {
     core.debug(inspect(error));
