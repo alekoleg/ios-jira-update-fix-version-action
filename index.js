@@ -48,7 +48,8 @@ async function main() {
 
     const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..HEAD`);
 
-    const regexp = new RegExp(inputs.ticketRegexp, "i")
+    // const regexp = new RegExp(inputs.ticketRegexp, "i")
+    const regexp = /(CLIENTAPP|RNTL|MTL)-\d{1,}/i
     const matches = commits.match(regexp)
 
     // const commits = await git.log([
