@@ -2729,6 +2729,7 @@ async function main() {
     const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..HEAD`);
 
     const regexp = new RegExp(inputs.ticketRegexp, "gmi")
+    core.info("olololol")
     core.info(regexp)
     // const regexp = /${inputs.targetBranch} -\d{1,}/gmi
     // const regexp = /(CLIENTAPP|RNTL|MTL)-\d{1,}/gmi
