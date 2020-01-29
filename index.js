@@ -48,11 +48,14 @@ async function main() {
 
     const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..HEAD`);
 
+    const regexp = new RegExp(inputs.ticketRegexp, "i")
+    const matches = commits.match(regexp)
+
     // const commits = await git.log([
     //   `--no-merges`,
     //   `origin/${inputs.targetBranch}..HEAD`,
     // ])
-    core.info("Commits: " + JSON.stringify(commits));
+    core.info("Commits: " + JSON.stringify(matches));
   } catch (error) {
     core.debug(inspect(error));
     core.setFailed(error.message);
