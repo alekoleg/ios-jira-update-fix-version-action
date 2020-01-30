@@ -21,7 +21,8 @@
     "@actions/core": "^1.2.2",
     "@octokit/request": "^5.1.0",
     "execa": "^2.0.4",
-    "jira-connector": "^3.1.0"
+    "jira-connector": "^3.1.0",
+    "xcode": "^2.1.0"
   },
   "devDependencies": {
     "@semantic-release/git": "^7.0.18",
