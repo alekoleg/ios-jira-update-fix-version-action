@@ -3138,6 +3138,9 @@ async function main() {
       core.info("Issue version: " + JSON.stringify(issue.fields.fixVersions))
     })
     
+    
+    const version = await getVersionNumber("mTakso")
+    core.info("Version number is " + version)
 
   } catch (error) {
     core.debug(inspect(error));
