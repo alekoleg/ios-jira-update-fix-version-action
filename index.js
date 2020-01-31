@@ -5,7 +5,6 @@ const { command } = require("execa");
 const core = require("@actions/core");
 const { request } = require("@octokit/request");
 const JiraClient = require("jira-connector");
-const xcode = require('xcode');
 
 main();
 
@@ -77,7 +76,7 @@ async function main() {
     })
     
     
-    const version = await getVersionNumber("mTakso")
+    const version = await runShellCommand(`sed -n '/MARKETING_VERSION/{s/MARKETING_VERSION = //;s/;//;s/^[[:space:]]*//;p;q;}' ./mTakso.xcodeproj/project.pbxproj`)
     core.info("Version number is " + version)
 
   } catch (error) {
@@ -96,20 +95,6 @@ async function runShellCommand(commandString) {
   } catch (error) {
     core.debug(inspect(error));
     throw error;
-  }
-}
-
-async function getVersionNumber(projectName) {
-  try {
-    const project = xcode.project(`${projectName}.xcodeproj/project.pbxproj`).parse(() => {
-      const config = project.pbxXCBuildConfigurationSection();
-      const releaseScheme = Object.keys(config).find(key => config[key].name === 'Release');
-
-      const version = config[releaseScheme].buildSettings.MARKETING_VERSION;
-      return version
-    });
-  } catch (error) {
-    throw error
   }
 }
 
