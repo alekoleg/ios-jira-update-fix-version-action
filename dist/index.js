@@ -3822,6 +3822,7 @@ async function main() {
 
     }
 
+    var errors = []
     for (var i = matches.length - 1; i >= 0; i--) {
       const ticket = matches[i]
       await jira.issue.editIssue({
@@ -3833,6 +3834,9 @@ async function main() {
             ]
           }
         }
+      }).catch(function(error) {
+        core.info(error)
+        errors.push(JSON.stringify(error))
       })
     }  
 
@@ -3840,7 +3844,10 @@ async function main() {
     const client = new _actions_github__WEBPACK_IMPORTED_MODULE_0__.GitHub(token, { })
 
     const urls = inputs.jiraProjectIds.map(id => `https:\/\/${inputs.jiraHost}\/projects\/${id}?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page`)
-    const body = `Ticket has been updated 🎉 \n please review it: \n ${urls.join("\n")}`
+    var body = `Ticket has been updated 🎉 \n please review it: \n ${urls.join("\n")}`
+    if (errors.length > 0) {
+      body = body + `🆘 There are error while updating: \n ${errors.join("\n")}`
+    }
     await client.issues.createComment({..._actions_github__WEBPACK_IMPORTED_MODULE_0__.context.issue, body: body})
 
   } catch (error) {
