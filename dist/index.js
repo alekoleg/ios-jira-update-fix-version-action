@@ -2710,7 +2710,7 @@ async function main() {
       jiraHost: core.getInput("jiraHost"),
       projectName: core.getInput("projectName"),
       versionSuffix: core.getInput("versionSuffix"),
-      jiraProjectIds: core.getInpu("jiraProjectIds").split(",")
+      jiraProjectIds: core.getInput("jiraProjectIds").split(",")
     };
 
     core.debug(`Inputs: ${inspect(inputs)}`);
