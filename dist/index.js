@@ -3839,7 +3839,9 @@ async function main() {
     const token = core.getInput('github-token', {required: true})
     const client = new _actions_github__WEBPACK_IMPORTED_MODULE_0__.GitHub(token, { })
 
-    await client.issues.createComment({..._actions_github__WEBPACK_IMPORTED_MODULE_0__.context.issue, body: "Test result"})
+    const urls = inputs.jiraProjectIds.map(id => `https:\/\/${inputs.jiraHost}\/projects\/${id}?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page`)
+    const body = `Ticket has been updated 🎉 \n please review it: \n ${urls.join("\n")}`
+    await client.issues.createComment({..._actions_github__WEBPACK_IMPORTED_MODULE_0__.context.issue, body: body})
 
   } catch (error) {
     core.debug(inspect(error));
