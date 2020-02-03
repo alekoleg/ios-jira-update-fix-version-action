@@ -4,6 +4,12 @@ branding:
   icon: "git-pull-request"
   color: purple
 inputs:
+  projectName:
+    description: "Xcode pbxprodj file name"
+    required: true
+  versionSuffix:
+    description: "It will be appended before version"
+    required: true
   jiraAccount:
     description: "Jira account"
     required: true
@@ -12,8 +18,11 @@ inputs:
     required: true
   jiraHost:
     description: "Jira Host"
-    required: false
+    required: true
     default: "taxify.atlassian.net"
+  jiraProjectIds:
+    description: "Ids of Jira Projects where to create release version \"1111, 11213\""
+    required: true
   ticketRegexp:
     description: "Regexp of the Jira Ticket Number"
     required: true

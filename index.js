@@ -40,6 +40,9 @@ async function main() {
       jiraAccount: core.getInput("jiraAccount"),
       jiraToken: core.getInput("jiraToken"),
       jiraHost: core.getInput("jiraHost"),
+      projectName: core.getInput("projectName"),
+      versionSuffix: core.getInput("versionSuffix"),
+      jiraProjectIds: core.getInpu("jiraProjectIds").split(",")
     };
 
     core.debug(`Inputs: ${inspect(inputs)}`);
@@ -58,6 +61,10 @@ async function main() {
 
     core.info("Commits: " + JSON.stringify(matches));
 
+    var version = await runShellCommand(`sed -n '/MARKETING_VERSION/{s/MARKETING_VERSION = //;s/;//;s/^[[:space:]]*//;p;q;}' ./mTakso.xcodeproj/project.pbxproj`)
+    version = `${inputs.versionSuffix}.${version}`
+    core.info("Version number is " + version)
+
 
     var jira = new JiraClient({
       host: inputs.jiraHost,
@@ -68,16 +75,22 @@ async function main() {
       strictSSL: true
     });
 
-    matches.forEach(async element => {
+    
+    for (var i = inputs.jiraProjectIds.length - 1; i >= 0; i--) {
+      const project = inputs.jiraProjectIds[i]
+      await jira.version.createVersion({ projectId : project, name: "CI.4.99"}).catch(function(error) {
+        core.info(error)
+      });
+
+    }
+
+    for (var i = matches.length - 1; i >= 0; i--) {
+      const tiket = matches[i]
       const issue = await jira.issue.getIssue({ issueKey: element });  
       core.info("Issue : " + element)
       
       core.info("Issue version: " + JSON.stringify(issue.fields.fixVersions))
-    })
-    
-    
-    const version = await runShellCommand(`sed -n '/MARKETING_VERSION/{s/MARKETING_VERSION = //;s/;//;s/^[[:space:]]*//;p;q;}' ./mTakso.xcodeproj/project.pbxproj`)
-    core.info("Version number is " + version)
+    }  
 
   } catch (error) {
     core.debug(inspect(error));
