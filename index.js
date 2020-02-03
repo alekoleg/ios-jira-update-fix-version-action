@@ -28,9 +28,9 @@ async function main() {
     );
     return;
   }
-  if (!process.env.GITHUB_HEAD) {
+  if (!process.env.GITHUB_HEAD_REF) {
     core.setFailed(
-      "GITHUB_HEAD missing, must be set to the repository's default branch"
+      "GITHUB_HEAD_REF missing, must be set to the repository's default branch"
     );
     return;
   }
@@ -50,9 +50,9 @@ async function main() {
     core.debug(`Inputs: ${inspect(inputs)}`);
 
     await runShellCommand(`git fetch origin ${inputs.targetBranch}`)
-    await runShellCommand(`git fetch origin ${process.env.GITHUB_HEAD}`)
+    await runShellCommand(`git fetch origin ${process.env.GITHUB_HEAD_REF}`)
 
-    const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_HEAD}`);
+    const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_HEAD_REF}`);
 
     const regexp = new RegExp(inputs.ticketRegexp, "gmi")
     core.info("olololol")
