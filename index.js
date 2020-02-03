@@ -6,6 +6,8 @@ const core = require("@actions/core");
 const { request } = require("@octokit/request");
 const JiraClient = require("jira-connector");
 
+import {context, GitHub} from '@actions/github'
+
 main();
 
 async function main() {
@@ -78,19 +80,30 @@ async function main() {
     
     for (var i = inputs.jiraProjectIds.length - 1; i >= 0; i--) {
       const project = inputs.jiraProjectIds[i]
-      await jira.version.createVersion({ projectId : project, name: "CI.4.99"}).catch(function(error) {
+      await jira.version.createVersion({ projectId : project, name: version }).catch(function(error) {
         core.info(error)
       });
 
     }
 
     for (var i = matches.length - 1; i >= 0; i--) {
-      const tiket = matches[i]
-      const issue = await jira.issue.getIssue({ issueKey: tiket });  
-      core.info("Issue : " + tiket)
-      
-      core.info("Issue version: " + JSON.stringify(issue.fields.fixVersions))
+      const ticket = matches[i]
+      await jira.issue.editIssue({
+        issueKey: `${ticket}`,
+        issue: {
+          update: {
+            fixVersions: [
+              {"add" : { name : `${version}` }}
+            ]
+          }
+        }
+      })
     }  
+
+    const token = core.getInput('github-token', {required: true})
+    const client = new GitHub(token, { })
+
+    await client.issues.createComment({...context.issue, body: "Test result"})
 
   } catch (error) {
     core.debug(inspect(error));

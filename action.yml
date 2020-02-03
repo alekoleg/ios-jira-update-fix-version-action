@@ -4,6 +4,9 @@ branding:
   icon: "git-pull-request"
   color: purple
 inputs:
+  github-token:
+    description: "Token for GitHub access"
+    required: true
   projectName:
     description: "Xcode pbxprodj file name"
     required: true

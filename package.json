@@ -19,6 +19,7 @@
   "homepage": "https://github.com/alekoleg/ios-jira-update-fix-version-action#readme",
   "dependencies": {
     "@actions/core": "^1.2.2",
+    "@actions/github": "^1.1.0",
     "@octokit/request": "^5.1.0",
     "execa": "^2.0.4",
     "jira-connector": "^3.1.0"
