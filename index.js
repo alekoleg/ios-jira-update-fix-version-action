@@ -52,7 +52,7 @@ async function main() {
     await runShellCommand(`git fetch origin ${inputs.targetBranch}`)
     await runShellCommand(`git fetch origin ${process.env.GITHUB_REF}`)
 
-    const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..HEAD`);
+    const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_REF}`);
 
     const regexp = new RegExp(inputs.ticketRegexp, "gmi")
     core.info("olololol")
