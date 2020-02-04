@@ -3834,8 +3834,10 @@ async function main() {
     }
 
     var errors = []
-    for (var i = matches.length - 1; i >= 0; i--) {
-      const ticket = matches[i]
+    const matchesSet = new Set(matches)
+    const trimedArray =  Array.from(matchesSet)
+    for (var i = trimedArray.length - 1; i >= 0; i--) {
+      const ticket = trimedArray[i]
       core.info(`Updating ticket -> ${ticket}` )
       await jira.issue.editIssue({
         issueKey: `${ticket}`,
