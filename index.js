@@ -124,7 +124,7 @@ async function main() {
     }  
 
     const urls = inputs.jiraProjectIds.map(id => `https:\/\/${inputs.jiraHost}\/projects\/${id}?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page`)
-    var body = `Ticket has been updated 🎉 \n please review it: \n ${urls.join("\n")}`
+    var body = `Tickets has been updated 🎉 \n please review it: \n ${urls.join("\n")}`
     if (errors.length > 0) {
       body = body + `\n\n🆘 There are errors while updating: \n\n ${errors.join("\n\n")}`
     }
