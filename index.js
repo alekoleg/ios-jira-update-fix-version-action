@@ -73,7 +73,7 @@ async function main() {
 
     core.info("Commits: " + JSON.stringify(matches));
 
-    var version = await runShellCommand(`sed -n '/MARKETING_VERSION/{s/MARKETING_VERSION = //;s/;//;s/^[[:space:]]*//;p;q;}' ./mTakso.xcodeproj/project.pbxproj`)
+    var version = await runShellCommand(`sed -n '/MARKETING_VERSION/{s/MARKETING_VERSION = //;s/;//;s/^[[:space:]]*//;p;q;}' ./${inputs.projectName}.xcodeproj/project.pbxproj`)
     version = `${inputs.versionSuffix}.${version}`
     core.info("Version number is " + version)
 
