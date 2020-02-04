@@ -3785,16 +3785,26 @@ async function main() {
 
     core.debug(`Inputs: ${inspect(inputs)}`);
 
+    const token = core.getInput('github-token', {required: true})
+    const client = new _actions_github__WEBPACK_IMPORTED_MODULE_0__.GitHub(token, { })
+
+    // checking the branch
+    const brachRegexp = new RegExp(`release\/${inputs.versionSuffix}.\\d{1,2}.\\d{1,3}`)
+    const brachVerification = process.env.GITHUB_HEAD_REF.match(/release/gmi)
+    if (brachVerification.length == 0) {
+      const body = `Wrong brach format. Please fix it. Expected format is ${JSON.stringify(brachRegexp)}`
+      await client.issues.createComment({..._actions_github__WEBPACK_IMPORTED_MODULE_0__.context.issue, body: body})
+      throw "Wrong branch format"
+    }
+
     await runShellCommand(`git fetch origin ${inputs.targetBranch}`)
     await runShellCommand(`git fetch origin ${process.env.GITHUB_HEAD_REF}`)
 
     const commits = await runShellCommand(`git log --pretty=oneline --no-merges origin/${inputs.targetBranch}..${process.env.GITHUB_HEAD_REF}`);
 
     const regexp = new RegExp(inputs.ticketRegexp, "gmi")
-    core.info("olololol")
     core.info(regexp)
-    // const regexp = /${inputs.targetBranch} -\d{1,}/gmi
-    // const regexp = /(CLIENTAPP|RNTL|MTL)-\d{1,}/gmi
+    
     const matches = commits.match(regexp)
 
     core.info("Commits: " + JSON.stringify(matches));
@@ -3813,9 +3823,10 @@ async function main() {
       strictSSL: true
     });
 
-    
+
     for (var i = inputs.jiraProjectIds.length - 1; i >= 0; i--) {
       const project = inputs.jiraProjectIds[i]
+      core.info(`Creating ${version} for project -> ${project}` )
       await jira.version.createVersion({ projectId : project, name: version }).catch(function(error) {
         core.info(error)
       });
@@ -3825,6 +3836,7 @@ async function main() {
     var errors = []
     for (var i = matches.length - 1; i >= 0; i--) {
       const ticket = matches[i]
+      core.info(`Updating ticket -> ${ticket}` )
       await jira.issue.editIssue({
         issueKey: `${ticket}`,
         issue: {
@@ -3836,17 +3848,17 @@ async function main() {
         }
       }).catch(function(error) {
         core.info(error)
-        errors.push(JSON.stringify(error))
+        // clear headers
+        var printableError = error
+        printableError.headers = "Hidden"
+        errors.push(JSON.stringify(printableError))
       })
     }  
-
-    const token = core.getInput('github-token', {required: true})
-    const client = new _actions_github__WEBPACK_IMPORTED_MODULE_0__.GitHub(token, { })
 
     const urls = inputs.jiraProjectIds.map(id => `https:\/\/${inputs.jiraHost}\/projects\/${id}?selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page`)
     var body = `Ticket has been updated 🎉 \n please review it: \n ${urls.join("\n")}`
     if (errors.length > 0) {
-      body = body + `🆘 There are error while updating: \n ${errors.join("\n")}`
+      body = body + `\n\n🆘 There are errors while updating: \n\n ${errors.join("\n\n")}`
     }
     await client.issues.createComment({..._actions_github__WEBPACK_IMPORTED_MODULE_0__.context.issue, body: body})
 
