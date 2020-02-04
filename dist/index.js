@@ -3850,7 +3850,9 @@ async function main() {
         core.info(error)
         // clear headers
         var printableError = JSON.parse(error)
-        printableError.headers = "Hidden"
+        printableError.headers = null
+        printableError.issue = printableError.request.uri.path
+        printableError.request = null
         errors.push(JSON.stringify(printableError))
       })
     }  
