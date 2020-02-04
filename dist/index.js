@@ -3849,7 +3849,7 @@ async function main() {
       }).catch(function(error) {
         core.info(error)
         // clear headers
-        var printableError = error
+        var printableError = JSON.parse(error)
         printableError.headers = "Hidden"
         errors.push(JSON.stringify(printableError))
       })
